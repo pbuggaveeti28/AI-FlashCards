@@ -12,15 +12,20 @@ import Link from "next/link"
 
 export default function SignUpPage() {
 	return (
-		<>
+		<Container maxWidth="lg">
 			<AppBar position="static" sx={{ backgroundColor: "#3f51b5" }}>
 				<Toolbar>
 					<Typography variant="h6" sx={{ flexGrow: 1 }}>
 						Flashcard SaaS
 					</Typography>
 					<Button color="inherit">
-						<Link href="/login" passHref>
+						<Link href="/sign-up" passHref>
 							Login
+						</Link>
+					</Button>
+					<Button color="inherit">
+						<Link href="/sign-in" passHref>
+							Sign In
 						</Link>
 					</Button>
 				</Toolbar>
@@ -34,10 +39,10 @@ export default function SignUpPage() {
 				sx={{ textAlign: "center", my: 4 }}
 			>
 				<Typography variant="h4" component="h1" gutterBottom>
-					Sign In
+					SignUp
 				</Typography>
 				<SignIn />
 			</Box>
-		</>
+		</Container>
 	)
 }
