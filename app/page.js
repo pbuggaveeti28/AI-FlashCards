@@ -1,4 +1,13 @@
-import { Box, Toolbar, Typography, Grid, AppBar, Button } from "@mui/material"
+import {
+	Box,
+	Toolbar,
+	Typography,
+	Grid,
+	AppBar,
+	Button,
+	Container
+} from "@mui/material"
+import Head from "next/head"
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
 
 export default function Home() {
@@ -20,7 +29,11 @@ export default function Home() {
 	}
 
 	return (
-		<>
+		<Container maxWidth="lg">
+			<Head>
+				<title>FlashCards AI</title>
+				<meta name="description" content="Create flashcards"></meta>
+			</Head>
 			<AppBar position="static">
 				<Toolbar>
 					<Typography variant="h6" style={{ flexGrow: 1 }}>
@@ -63,11 +76,38 @@ export default function Home() {
 
 			{/* Features Section: */}
 			<Box sx={{ my: 6 }}>
-				<Typography variant="h4" component="h2" gutterBottom>
+				<Typography
+					variant="h4"
+					component="h2"
+					gutterBottom
+					sx={{ textAlign: "center" }}
+				>
 					Features
 				</Typography>
 				<Grid container spacing={4}>
-					{/* Feature items */}
+					<Grid item xs={12} md={4}>
+						<Typography variant="h6">Easy Text Input</Typography>
+						<Typography>
+							Simply input your text & let our software do the rest. Creating
+							flash cards has never been easier
+						</Typography>
+					</Grid>
+
+					<Grid item xs={12} md={4}>
+						<Typography variant="h6">Smart Flashcards</Typography>
+						<Typography>
+							Our AI intelligently breaks down your text into concise flashcards
+							perfect for studing
+						</Typography>
+					</Grid>
+
+					<Grid item xs={12} md={4}>
+						<Typography variant="h6">Accessible Anywhere</Typography>
+						<Typography>
+							Access your flashcards from any device at any time .Study on the
+							go with ease
+						</Typography>
+					</Grid>
 				</Grid>
 			</Box>
 
@@ -76,10 +116,46 @@ export default function Home() {
 				<Typography variant="h4" component="h2" gutterBottom>
 					Pricing
 				</Typography>
-				<Grid container spacing={4} justifyContent="center">
-					{/* Pricing plans */}
+				<Grid container spacing={4}>
+					<Grid item xs={12} md={6}>
+						<Box
+							sx={{
+								p: 3,
+								border: "1px soild",
+								borderColor: "grey.300",
+								borderRadius: 2
+							}}
+						></Box>
+						<Typography variant="h5">Basic</Typography>
+						<Typography variant="h6">$5/month</Typography>
+						<Typography>
+							Access to basic flashcards features & limited storage
+						</Typography>
+						<Button variant="contained" color="primary">
+							Choose Basic
+						</Button>
+					</Grid>
+
+					<Grid item xs={12} md={6}>
+						<Box
+							sx={{
+								p: 3,
+								border: "1px soild",
+								borderColor: "grey.300",
+								borderRadius: 2
+							}}
+						></Box>
+						<Typography variant="h5">Pro</Typography>
+						<Typography variant="h6">$5/month</Typography>
+						<Typography>
+							Access to basic flashcards features & limited storage
+						</Typography>
+						<Button variant="contained" color="primary">
+							Choose Basic
+						</Button>
+					</Grid>
 				</Grid>
 			</Box>
-		</>
+		</Container>
 	)
 }
