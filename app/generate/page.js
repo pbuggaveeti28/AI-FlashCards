@@ -3,56 +3,78 @@
 import { useState } from "react"
 import {
 	Container,
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogActions,
+	DialogContentText,
 	TextField,
 	Button,
 	Typography,
 	Box,
 	Grid,
 	CardContent,
-	Card
+	Paper,
+	Card,
+	CardActionArea
 } from "@mui/material"
+import { useUser } from "@clerk/nextjs"
+import { collection } from "firebase/firestore"
+import { useRouter } from "next/navigation"
 
 export default function Generate() {
-	const [text, setText] = useState("")
+	const { isLoaded, isSignedIn, user } = useUser()
 	const [flashcards, setFlashcards] = useState([])
+	const [flipped, setFlipped] = useState([])
+	const [text, setText] = useState("")
+	const [name, setName] = useState("")
+	const [open, setOpen] = useState(false)
+	const router = useRouter()
 
-	const [setName, setSetName] = useState("")
 	const [dialogOpen, setDialogOpen] = useState(false)
 
 	const handleOpenDialog = () => setDialogOpen(true)
 	const handleCloseDialog = () => setDialogOpen(false)
 
 	const saveFlashcards = async () => {
-		if (!setName.trim()) {
+		if (!name) {
 			alert("Please enter a name for your flashcard set.")
 			return
 		}
 
 		try {
+			const batch = writeBatch(db)
+
 			const userDocRef = doc(collection(db, "users"), user.id)
 			const userDocSnap = await getDoc(userDocRef)
 
-			const batch = writeBatch(db)
-
 			if (userDocSnap.exists()) {
-				const userData = userDocSnap.data()
-				const updatedSets = [
-					...(userData.flashcardSets || []),
-					{ name: setName }
-				]
-				batch.update(userDocRef, { flashcardSets: updatedSets })
+				if (collection.find((item) => item.name == name)) {
+					alert("Flashcard with same name already exists")
+					return
+				} else {
+					collection.push(name)
+					batch.set(userDocRef, { flashcardSets: updatedSets }, { merge: true })
+				}
 			} else {
+				//Does not exist
 				batch.set(userDocRef, { flashcardSets: [{ name: setName }] })
 			}
 
-			const setDocRef = doc(collection(userDocRef, "flashcardSets"), setName)
-			batch.set(setDocRef, { flashcards })
+			const colref = collection(userDocRef, name)
+
+			flashcards.forEach((item) => {
+				const cardRef = doc(colref)
+				batch.set(userDocRef, flashcards)
+			})
 
 			await batch.commit()
+			handleCloseDialog()
 
 			alert("Flashcards saved successfully!")
-			handleCloseDialog()
+
 			setSetName("")
+			router.push("/flashcards")
 		} catch (error) {
 			console.error("Error saving flashcards:", error)
 			alert("An error occurred while saving flashcards. Please try again.")
@@ -66,7 +88,7 @@ export default function Generate() {
 		}
 
 		try {
-			const response = await fetch("/api/generate", {
+			const response = await fetch("./api/generate", {
 				method: "POST",
 				body: text
 			})
@@ -76,6 +98,7 @@ export default function Generate() {
 			}
 
 			const data = await response.json()
+
 			setFlashcards(data)
 		} catch (error) {
 			console.error("Error generating flashcards:", error)
@@ -83,23 +106,46 @@ export default function Generate() {
 		}
 	}
 
+	const handleCardCLick = (id) => {
+		setFlipped((prev) => ({
+			...prev,
+			[id]: !prev[id]
+		}))
+	}
+
+	const handleOpen = () => {
+		setOpen(true)
+	}
+
+	const handleClose = () => {
+		setOpen(false)
+	}
 	return (
 		<>
 			<Container maxWidth="md">
-				<Box sx={{ my: 4 }}>
+				<Box
+					sx={{
+						mt: 4,
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "center"
+					}}
+				>
 					<Typography variant="h4" component="h1" gutterBottom>
 						Generate Flashcards
 					</Typography>
-					<TextField
-						value={text}
-						onChange={(e) => setText(e.target.value)}
-						label="Enter text"
-						fullWidth
-						multiline
-						rows={4}
-						variant="outlined"
-						sx={{ mb: 2 }}
-					/>
+					<Paper sx={{ width: "100%", p: 4, mb: 4 }}>
+						<TextField
+							value={text}
+							onChange={(e) => setText(e.target.value)}
+							label="Enter text"
+							fullWidth
+							multiline
+							rows={4}
+							variant="outlined"
+							sx={{ mb: 2 }}
+						/>
+					</Paper>
 					<Button
 						variant="contained"
 						color="primary"
@@ -114,18 +160,20 @@ export default function Generate() {
 							<Typography variant="h5" component="h2" gutterBottom>
 								Generated Flashcards
 							</Typography>
-							<Grid container spacing={2}>
+							<Grid container spacing={3}>
 								{flashcards.map((flashcard, index) => (
 									<Grid item xs={12} sm={6} md={4} key={index}>
 										<Card>
-											<CardContent>
-												<Typography variant="h6">Front:</Typography>
-												<Typography>{flashcard.front}</Typography>
-												<Typography variant="h6" sx={{ mt: 2 }}>
-													Back:
-												</Typography>
-												<Typography>{flashcard.back}</Typography>
-											</CardContent>
+											<CardActionArea onClick={() => handleCardCLick(index)}>
+												<CardContent>
+													<Typography variant="h6">Front:</Typography>
+													<Typography>{flashcard.front}</Typography>
+													<Typography variant="h6" sx={{ mt: 2 }}>
+														Back:
+													</Typography>
+													<Typography>{flashcard.back}</Typography>
+												</CardContent>
+											</CardActionArea>
 										</Card>
 									</Grid>
 								))}
@@ -140,7 +188,7 @@ export default function Generate() {
 								color="primary"
 								onClick={handleOpenDialog}
 							>
-								Save Flashcards
+								Save
 							</Button>
 						</Box>
 					)}
