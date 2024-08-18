@@ -146,12 +146,12 @@ export default function Home() {
 							}}
 						></Box>
 						<Typography variant="h5">Pro</Typography>
-						<Typography variant="h6">$5/month</Typography>
+						<Typography variant="h6">$10/month</Typography>
 						<Typography>
 							Access to basic flashcards features & limited storage
 						</Typography>
 						<Button variant="contained" color="primary">
-							Choose Basic
+							Choose Pro
 						</Button>
 					</Grid>
 				</Grid>

@@ -1,3 +1,8 @@
+'use client'
+import { useEffect,useState } from "react"
+import { useRouter } from "next/navigation"
+import getStripe from '@/utils/get-stripe.js'
+import { useSearchParams } from "next/navigation"
 import {
 	Container,
 	TextField,
@@ -39,7 +44,7 @@ const ResultPage = () => {
 
 	if (loading) {
 		return (
-			<Container maxWidth="sm" sx={{ textAlign: "center", mt: 4 }}>
+			<Container maxWidth="100vx" sx={{ textAlign: "center", mt: 4 }}>
 				<CircularProgress />
 				<Typography variant="h6" sx={{ mt: 2 }}>
 					Loading...
@@ -50,7 +55,7 @@ const ResultPage = () => {
 
 	if (error) {
 		return (
-			<Container maxWidth="sm" sx={{ textAlign: "center", mt: 4 }}>
+			<Container maxWidth="100vx" sx={{ textAlign: "center", mt: 4 }}>
 				<Typography variant="h6" color="error">
 					{error}
 				</Typography>
@@ -58,8 +63,9 @@ const ResultPage = () => {
 		)
 	}
 
+
 	return (
-		<Container maxWidth="sm" sx={{ textAlign: "center", mt: 4 }}>
+		<Container maxWidth="100vx" sx={{ textAlign: "center", mt: 4 }}>
 			{session.payment_status === "paid" ? (
 				<>
 					<Typography variant="h4">Thank you for your purchase!</Typography>
