@@ -210,7 +210,7 @@ export default function Generate() {
 						type="text"
 						fullWidth
 						value={setName}
-						onChange={(e) => setSetName(e.target.value)}
+						onChange={(e) => setName(e.target.value)}
 					/>
 				</DialogContent>
 				<DialogActions>
